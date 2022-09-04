@@ -61,7 +61,7 @@ while ((!existe_usuario) & (intentos <= 3) & (!salir)){
         if (((usuario || contrasena) === "0") || (es_NULL(usuario) || es_NULL(contrasena))) {
             salir = true;
             alert("Exit: Gracias por utilizar el sistema de facturación");
-            window.location.href = "http://127.0.0.1:5500/index.html";
+            window.location.href = "http://127.0.0.1:5501/index.html";
         }
         else
         {        
@@ -87,7 +87,7 @@ while ((!existe_usuario) & (intentos <= 3) & (!salir)){
 if (!salir){
     if (!existe_usuario){
         alert("Usted a superado la cantidad maxima de intentos, contactese con el administrador del dominio")
-        window.location.href = "http://127.0.0.1:5500/index.html";
+        window.location.href = "http://127.0.0.1:5501/index.html";
     }
     else
     {
@@ -97,7 +97,7 @@ if (!salir){
             "2) Facturación Crédito" + "\n" + 
             "3) Emisión de recibos" + "\n" +
             "4) Emisión de notas de crédito")
-            window.location.href = "http://127.0.0.1:5500/pages/menu.html";
+            window.location.href = "http://127.0.0.1:5501/pages/menu.html";
     }
    
 }
