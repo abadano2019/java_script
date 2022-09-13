@@ -6,6 +6,7 @@ let intentos = 1; // variable para registrar cantidad de intentos ya sea de ingr
 let salir = false; // variable utilizada para marcar si se desea salir de la aplicación
 let codigo_salida = 0; // variable utilizada para la validación del usuario y contraseña
 
+
 //Mensaje de bienvenida e instrucción de como salir del sistema
 alert("BIENVENIDO AL SISTEMA CENTRAL DE FACTURACIÓN" +"\n" + 
       "(Solo habilitado para usuarios registrados)" + "\n"+"\n" + 
@@ -71,6 +72,7 @@ while ((!existe_usuario) & (intentos <= 3) & (!salir)){
             // chequeo de resultados 
             if (codigo_salida === 1){
                 existe_usuario = true;
+                localStorage.setItem("usuario_activo",usuario)
             }
             if (codigo_salida === 0){
                 alert("Usuario / Contraseña incorrectos");

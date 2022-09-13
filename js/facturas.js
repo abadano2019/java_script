@@ -2,7 +2,6 @@ let registrosFactura = [];
 let colFacturas = [];
 let nroCliente = 0;
 let fechaVto = "";
-let salir = false;
 let numeroFactura = 100000;
 
 // Clase Factura, representa una factura emitida a un cliente con el detalle de compra
@@ -173,11 +172,15 @@ class Facturas{
 //          calculoTotalRegistro(): realiza el calculo de cantidad por precio unitario de un articulo
 //          getTotalRegistro(): devuelve el total del registro 
 class RegistroFactura {
-    constructor(codigo, cantidad, precioUnitario){
+    constructor(nroRenglon, codigo, cantidad, precioUnitario){
+        this.nroRenglon = nroRenglon;
         this.codigo = codigo;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.totalRegistro = this.getTotalRegistro();
+    }
+    getNroRenglon(){
+        return this.nroRenglon;
     }
     getCodigo(){
         return this.codigo;
@@ -193,8 +196,7 @@ class RegistroFactura {
     }
     getTotalRegistro(){
         return this.calculoTotalRegistro();
-    }
-    
+    }    
 }
 
 // Función para validar si un valor es null
@@ -231,6 +233,11 @@ const validarDato = (str) =>{
 
     return dato;
 }
+
+// Función para realizar el vaciado de un array 
+// input: array: corresponde a un array con datos a ser borrados
+//
+// output: devuelve el array vacio
 const vaciarArray = (array) =>{
     
     while(array.length !=0){
@@ -238,136 +245,139 @@ const vaciarArray = (array) =>{
     }
 }
 
-// Función para realizar la carga de los registros o detalle de la factura, por cada uno de los datos a  
-// ingresar, se controla que sean datos numericos en caso de no ingresar un numero, se continua pidiendo el valor
-// con el botón cancelar se sale de la ventana y del menu.
-// input: sin datos de entrada
+// Función para agregar lineas al detalle de la factura, toma los datos nro.producto, cantidad y 
+// precio unitario y agrega la linea al detalle de la factura  
+// input: tbodyDetalle: corresponde al body del detalle de la factura para agregar lineas
+//        filaDetalle: corresponde a la fila de datos que se agregaran al detalle de la factura
 //
-// output: sin datos de salida, se actualiza variable global salir, se crea registros de factura
-//         y se agregan al array registrosFacturas (variable global)
-const cargaRegistrosFactura = () =>{
-    let codigo = 0;
-    let cantidad = 0;
-    let precioUnitario = 0;
-    let continuar = 0;
-
-    while(registrosFactura.length !=0){
-        registrosFactura.pop();
-    }
-    
-    do{
-        (!salir) ? codigo = parseInt(validarDato("Ingrese codigo de producto: ")) : "";
-        (!salir) ? cantidad = parseInt(validarDato("Ingrese cantidad: ")) : "";
-        (!salir) ? precioUnitario = parseInt(validarDato("Ingrese precio unitario: ")): "";
-
-        nuevoRegistro = new RegistroFactura(codigo,cantidad,precioUnitario);
-        registrosFactura.push(nuevoRegistro);
-
-        (!salir) ? continuar = validarDato("Desea ingresar otro registro: (1 para continuar / cualquier otra tecla para salir)"):"";
-
-    }while ((continuar === "1") & (!salir))
+// output: no tiene, agrega linea al body del detalle de factura
+function renderCarrito(tbodyDetalle, filaDetalle){
+    tbodyDetalle.innerHTML = "";
+    if (!filaDetalle.length >= 1) {return null}
+    filaDetalle.map((item) => {
+        const tr = document.createElement('tr');
+        /*tr.classList.add('ItemCarrito')*/
+        const Content =
+         `  <th scope="row">${item.nroRenglon}</th>
+            <td class="table__productos">
+                <p>${item.codigo}</p>
+            </td>
+            <td class="table__precios">
+                <p>${item.cantidad}</p>
+            </td>
+            <td class="table__cantidades">
+                <p>${item.precioUnitario}</p>
+            </td>
+        `
+        console.log(Content)
+        tr.innerHTML = "";
+        tr.innerHTML = Content;
+        tbodyDetalle.append(tr);
+    })
 }
+
+// Función que representa base de datos de empresas disponibles para facturar 
+// input: nroCliente: corresponde al numero de empresa a realizar facturación
+//
+// output: nombre de empresa en caso de existir, string vacio en caso de no existir
+function baseEmpresas(nroCliente)
+{   
+    let empresa = "";
+    switch (nroCliente) {
+        case 1001:
+            empresa = "LA CASA DE LAS TELAS S.A.";
+            break;
+        case 1002:
+            empresa = "LA FONTANA S.A.";
+            break;
+        default:
+            empresa = "";
+    }
+    return empresa;
+}
+
+// Variables de fecha y usuario que se muestran en el head de la pagina
+// El usuario corresponde al usuario que se logueo en la pagina login
+// la fecha y hora corresponde al del momento de la facturación
+// se usa local storage para pasar el usuario que realizó login
+fechaEmision = Date.now();
+let fechaHoy= new Date(fechaEmision);
+let usuario_activo = localStorage.getItem('usuario_activo');
+let contenedor_usuario = document.getElementById('usuario');
+contenedor_usuario.innerHTML = `<h3> Usuario: ${usuario_activo}</h3> 
+                                <h3> Fecha: ${fechaHoy}`;
+
+
+let codigo = 0;
+let cantidad = 0;
+let precioUnitario = 0;
+
+// Componentes tomados de la pagina Contado.html
+let numeroCliente = document.getElementById("nroCliente");
+let nroProducto = document.getElementById("nroProducto");
+let cantidadProducto = document.getElementById("cantidad");
+let precioUnitarioProd = document.getElementById("precioUnitario");
+let div_nro_cliente = document.getElementById("div_nro_cliente");
+let tbodyDetalle = document.getElementById('tbodyDetalle');
 
 let ColFacturas = new Facturas(colFacturas); 
-let otraFactura = "1";
-// bucle para poder cargar facturas a la colección de facturas, con el numero 1 se sigue cargando facturas y con 
-// cualquier otra tecla se sale
-while ((otraFactura === "1") & (!salir)){
 
-    nroCliente = validarDato("Ingrese numero de Cliente: ");
-    cargaRegistrosFactura();
-
-    if (!salir)  {
-        fechaEmision = Date.now();
-        let fechaHoy= new Date(fechaEmision);
-        fechaVto = new Date(2022,9,4);
-        let nuevaFactura = new Factura("CONTADO",numeroFactura,nroCliente,registrosFactura,fechaVto);
-        ColFacturas.agregarFactura(nuevaFactura);
-
-        alert(nuevaFactura.imprimirFactura());
-
-        otraFactura = prompt("¿Desea ingresar otra Factura? /// (1 confirma / cualquier otra tecla termina)");
-        numeroFactura++;
+// validación de los datos del formulario correspondiente a la carga de las lineas de la 
+// factura
+let frm = document.getElementById("formulario");
+frm.addEventListener('submit',(e) =>{
+    e.preventDefault();
+    // validación de datos, deben ser numericos 
+    if((isNaN(parseInt(numeroCliente.value))) || 
+       (isNaN(parseInt(nroProducto.value))) ||
+       (isNaN(parseInt(precioUnitarioProd.value))) ||
+       (isNaN(parseInt(cantidadProducto.value))))
+    {
+        // en caso de no ser valores numericos, se emite mensaje y se borran todos los inputs
+        alert("ingrese un valor numerico !!!!");
+        numeroCliente.value = "";
+        nroProducto.value = "";
+        precioUnitarioProd.value = ""
+        cantidadProducto.value = ""
     }
     else
-    {
-        alert("Exit");
-    }
-}
-
-// variables utilizadas para la busqueda y eliminación de facturas
-let nroFactura;
-let resultado_factura;
-let otraOper="1";
-
-// Iteracción para poder borrar facturas, se muestra los numeros de facturas cargados en la colección, se solicita
-// numero de factura a borrar, con el 1 se continua borrando otras facturas con cualauier otra tecla se sale
-(!salir) ? alert("ELIMINACION DE FACTURAS"):"";
-while ((otraOper === "1") & (!salir)){
-    
-    if (ColFacturas.estaVacio())
-    {
-        alert("No existen facturas ingresadas en el sistema");
-        salir = true;
-    }
-    else
-    {
-        alert("Numeros de Facturas ingresados:" + "\n" + "\n" + ColFacturas.mostrarNrosFacturas());
-        nroFactura = parseInt(validarDato("Ingrese nro de factrua a borrar: "));
-    }
-
-    resultado_factura = ColFacturas.buscarFactura(nroFactura);
-    if (!salir)
-    {
-        if (resultado_factura === undefined){
-            alert("No existe nro de factura !!!!!!")
+    {   
+        // si los valores son numericos, se valida que el nro de producto y la cantidad no sean cero
+        if((parseInt(nroProducto.value) === 0) || (parseInt(cantidadProducto.value) === 0))
+        {
+            alert("Nro.de producto o cantidad no pueden ser 0 !!!!")
         }
         else
-        {
-            ColFacturas.eliminarFactura(nroFactura);
-            alert("Detalle de Factura eliminada: " +"\n"+"\n" +resultado_factura.imprimirFactura());
+        {   
+            // en caso de que no sean 0, se busca en nombre de la empresa, en caso de no existir
+            // se borran todos los campos y se esperan nuevos valores
+            nroCliente = parseInt(numeroCliente.value)
+            codigo = parseInt(nroProducto.value);
+            precioUnitario = parseInt(precioUnitarioProd.value);
+            cantidad = parseInt(cantidadProducto.value);
+            const nombreEmpresa = baseEmpresas(nroCliente); 
+            if(nombreEmpresa === ""){
+                alert("No existe empresa !!!!");
+                numeroCliente.value = "";
+                nroProducto.value = "";
+                precioUnitarioProd.value = "";
+                cantidadProducto.value = "";
+            }
+            else
+            {   
+                // Si la empresa existe, se cambia el contenido del contenedor de nro de cliente por el nro y el nombre
+                // se agrega la linea al array correspondiente, y se agrega al detalle de la factura (body html)
+                div_nro_cliente.innerHTML =  "<label>NUMERO CLIENTE: "+nroCliente+" EMPRESA: " + nombreEmpresa + "</label>";
+                indice = registrosFactura.length; 
+                nuevoRegistro = new RegistroFactura(indice+1,codigo,cantidad,precioUnitario);
+                registrosFactura.push(nuevoRegistro);
+                renderCarrito(tbodyDetalle, registrosFactura)
+                precioUnitarioProd.value = "";
+                cantidadProducto.value = "";
+                nroProducto.value = "";
+            }
         }
-        otraOper = prompt("¿Desea realizar otra eliminación: ? /// (1 confirma / cualquier otra tecla termina)");
-    }
-    else
-    {
-        alert("Exit");
-    }
-}
-
-otraOper = "1";
-// Iteracción para poder realizar busquede de datos de facturas, se solicita nro de factura, se muestran los 
-// numeros de facturas disponibles y tipo de facturas disponibles, con el 1 se sigue realizando la busqueda 
-// de nuevas facturas con cualquier otra tecla se sale 
-(!salir) ? alert("BUSQUEDA DE FACTURAS"):"";
-while ((otraOper === "1") & (!salir)){
-    
-    if (ColFacturas.estaVacio())
-    {
-        alert("No existen facturas ingresadas en el sistema");
-        salir = true;
-    }
-    else
-    {
-        alert("Numeros de Facturas ingresados:" + "\n" + "\n" + ColFacturas.mostrarNrosFacturas());
-
-    }
         
-    nroFactura = parseInt(validarDato("Ingrese nro de factura a buscar: "));
-    if(!salir){
-        resultado_factura = ColFacturas.buscarFactura(nroFactura);
+    }
+})
 
-        if (resultado_factura === undefined){
-            alert("No existe nro de factura !!!!!!")
-        }
-        else
-        {
-            alert("Factura encontrada: " + resultado_factura.imprimirFactura());
-        }   
-        otraOper = prompt("¿Desea realizar otra busqueda: ? /// (1 confirma / cualquier otra tecla termina)");
-    }
-    else
-    {
-        alert("Exit");
-    }
-}
