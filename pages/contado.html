@@ -25,6 +25,9 @@
                 <div id="div_nro_cliente" class = "nroCliente">
                     <label for="">Nro.Cliente:</label>
                     <input type="text" id="nroCliente" >
+                </div>
+                <div id="div_nro_cliente_render">
+                    <!--RENDER-->
                 </div>        
                 <div class="tab-pane carrito" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
                 <br>
@@ -75,9 +78,9 @@
             <br><br>
             <div class="row mx-4">
                 <div class="col d-flex justify-content-end">
-                    <h3 class="itemCartTotal text-white">Total: 0</h3>
+                    <h3 id="id_label_total" class="itemCartTotal text-white">Total: 0</h3>
                     <div class="col d-flex justify-content-end">
-                        <button class="btn btn-success" onclick="ver()">Facturar</button>
+                        <button class="btn btn-success" onclick="facturar()">Emitir Factura</button>
                     </div>
                 </div>
             </div> 
@@ -88,7 +91,7 @@
             <a class = "referencia" href="./menu.html">volver</a>
         </div>
         <div class="container">
-            <a class = "referencia" href="./contado.html">Ingresar factura</a>
+            <a class = "referencia" href="./listarFacturas.html">Listar Facturas</a>
         </div>
     </footer>
 

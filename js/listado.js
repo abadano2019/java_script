@@ -1,9 +1,3 @@
-let registrosFactura = [];
-let colFacturas = [];
-let nroCliente = 0;
-let fechaVto = "";
-let numeroFactura = 100000;
-
 // Clase Factura, representa una factura emitida a un cliente con el detalle de compra
 // atributos: tipo: indica si es contado o credito
 //            nro: numero de factura
@@ -62,9 +56,6 @@ class Factura {
             str = str + "Codigo: " + item.getCodigo() + " Cantidad: " + item.getCantidad() + " Precio Unitario: " + item.getPrecioUnitario() + "\n"
         })
         return str
-    }
-    agregarDetalleRegistro(registroFactura){
-        this.registros.push(registroFactura);
     }
     totalMasIVA(){
         return this.getTotal()*1.22;
@@ -147,7 +138,6 @@ class Facturas{
         })
         return str
     }
-
     mostrarNrosFacturas(){
         const colFacturas = this.getColFacturas();
         let str = "";
@@ -249,11 +239,6 @@ const vaciarArray = (array) =>{
     }
 }
 
-// funión para mostrar por pantalla la suma de los importes de los productos seleccionados en la factura
-// calcula el iva y muestra el total mas iva
-// input: registros: colección de registros de detalles de una factura
-//        suma: elemento html a modificar par mostrar resultado
-// output: n/a
 function sumaDetalle(registros,suma){
     let total = 0;
     let iva = 0;
@@ -301,14 +286,10 @@ function renderCarrito(tbodyDetalle, filaDetalle, suma){
     sumaDetalle(filaDetalle, suma);
 }
 
-// función para borrar registros de detalle de una factura
-// input: tbody: body de la tabla donde se encuetran las registros de la factura a borrar
-//        total: elemento html para mostrar total = 0
-//
-// output: n/a
 function borrarRegistrosFactura(tbody, total){
     tbody.innerHTML = "";
     total.innerHTML = `TOTAL:&nbsp;&nbsp;$0`;
+    
 }
 
 // Función que representa base de datos de empresas disponibles para facturar 
@@ -335,126 +316,48 @@ function baseEmpresas(nroCliente)
 //
 // output: n/a
 function guardarFacturasLocalStorage(colFacturas){
-    localStorage.setItem("facturas", JSON.stringify(colFacturas));    
+    localStorage.setItem("facturas", JSON.stringify(colFacturas));
 }
 
-// Variables de fecha y usuario que se muestran en el head de la pagina
-// El usuario corresponde al usuario que se logueo en la pagina login
-// la fecha y hora corresponde al del momento de la facturación
-// se usa local storage para pasar el usuario que realizó login
-fechaEmision = Date.now();
-let fechaHoy= new Date(fechaEmision);
-let usuario_activo = localStorage.getItem('usuario_activo');
-let contenedor_usuario = document.getElementById('usuario');
-contenedor_usuario.innerHTML = `<h3> Usuario: ${usuario_activo}</h3> 
-                                <h3> Fecha: ${fechaHoy}`;
-
-
-let codigo = 0;
-let cantidad = 0;
-let precioUnitario = 0;
-
-// Componentes tomados de la pagina Contado.html
-let numeroCliente = document.getElementById("nroCliente");
-let nroProducto = document.getElementById("nroProducto");
-let cantidadProducto = document.getElementById("cantidad");
-let precioUnitarioProd = document.getElementById("precioUnitario");
-let div_nro_cliente = document.getElementById("div_nro_cliente");
-let div_nro_cliente_render = document.getElementById("div_nro_cliente_render");
-let tbodyDetalle = document.getElementById('tbodyDetalle');
-let lbl_total = document.getElementById('id_label_total');
-
-// colección de facturas
-let ColFacturas = new Facturas(colFacturas); 
-
-// validación de los datos del formulario correspondiente a la carga de las lineas de la 
-// factura
-let frm = document.getElementById("formulario");
-frm.addEventListener('submit',(e) =>{
-    e.preventDefault();
-    // validación de datos, deben ser numericos 
-    if((isNaN(parseInt(numeroCliente.value))) || 
-       (isNaN(parseInt(nroProducto.value))) ||
-       (isNaN(parseInt(precioUnitarioProd.value))) ||
-       (isNaN(parseInt(cantidadProducto.value))))
-    {
-        // en caso de no ser valores numericos, se emite mensaje y se borran todos los inputs
-        alert("ingrese un valor numerico !!!!");
-        if(registrosFactura.length === 0){
-            numeroCliente.value = "";
-        }
-        nroProducto.value = "";
-        precioUnitarioProd.value = ""
-        cantidadProducto.value = ""
+// función para listar facturas, toma del local storage una colección de facturas y despliega 
+// por pantalla todas las facturas que tiene almacenadas
+function listarFacturas(){
+    let detalle = localStorage.getItem('facturas');
+    arrayDetalle = JSON.parse(detalle);
+    arrayDetalle = arrayDetalle.colFacturas;
+    
+    let registros = "";
+    let content = "";
+    let total = 0;
+    arrayDetalle.forEach(item => {
+        let div = document.createElement("div");
+        content =
+         `  <h3>Tipo de Factura: ${item.tipo}</h3>
+            <h3>Numero Cliente: ${item.nroCliente} </h3>
+            <h3>Numero factura: ${item.nro}</h3>
+            <h3>Vto Factura: ${item.vto}</h3>
+         `  
+            detalle = item.registros;
+            //nroRenglon, codigo, cantidad, precioUnitario)
+            registros = "";
+            total = 0;
+            detalle.forEach((reg) => {
+                registros = registros + 
+                            ` <h3>Item Nro.: ${reg.nroRenglon}</h3>
+                              <h3>Codigo Producto: ${reg.codigo}</3>
+                              <h3>Cantidad: ${reg.cantidad}</3>
+                              <h3>Precio Unitario: ${reg.precioUnitario}</3>
+                            `
+                total = total + reg.cantidad*reg.precioUnitario;
+            })
+        div.innerHTML = content + registros + "<h3>Total factura: "+ total+" </3>"+"<br></br><br></br>";
+        document.body.append(div);
+        })
+    
+    
     }
-    else
-    {   
-        // si los valores son numericos, se valida que el nro de producto y la cantidad no sean cero
-        if((parseInt(nroProducto.value) === 0) || (parseInt(cantidadProducto.value) === 0))
-        {
-            alert("Nro.de producto o cantidad no pueden ser 0 !!!!")
-        }
-        else
-        {   
-            // en caso de que no sean 0, se busca en nombre de la empresa, en caso de no existir
-            // se borran todos los campos y se esperan nuevos valores
-            nroCliente = parseInt(numeroCliente.value)
-            codigo = parseInt(nroProducto.value);
-            precioUnitario = parseInt(precioUnitarioProd.value);
-            cantidad = parseInt(cantidadProducto.value);
-            const nombreEmpresa = baseEmpresas(nroCliente); 
-            if(nombreEmpresa === ""){
-                alert("No existe empresa !!!!");
-                numeroCliente.value = "";
-                nroProducto.value = "";
-                precioUnitarioProd.value = "";
-                cantidadProducto.value = "";
-            }
-            else
-            {   
-                // Si la empresa existe, se cambia el contenido del contenedor de nro de cliente por el nro y el nombre
-                // se agrega la linea al array correspondiente, y se agrega al detalle de la factura (body html)
-                div_nro_cliente.style.visibility = "hidden";
-                div_nro_cliente_render.style.visibility = "visible";
-                div_nro_cliente_render.innerHTML =  "<label>NUMERO CLIENTE: " + nroCliente+" EMPRESA: " + nombreEmpresa + "</label>";
-                indice = registrosFactura.length; 
-                nuevoRegistro = new RegistroFactura(indice+1,codigo,cantidad,precioUnitario);
-                registrosFactura.push(nuevoRegistro);
-                renderCarrito(tbodyDetalle, registrosFactura, lbl_total)
-                precioUnitarioProd.value = "";
-                cantidadProducto.value = "";
-                nroProducto.value = "";
-                
-            }
-        }
-        
-    }
-})
-
-// función para generar nueva factura, toma los registros cargadas, y el nro de cliente, mas un numero de factura 
-// autogenerado, fecha vencimiento igual fecha del dia, y se carga a la colección de facturas del sistema
-function facturar(){
-    let factura;
-    if (registrosFactura.length != 0){
-        
-        factura = new Factura("CONTADO",numeroFactura,nroCliente,registrosFactura,fechaHoy);
-        console.log(factura);
-        numeroFactura++;
-        ColFacturas.agregarFactura(factura);
-        alert(ColFacturas.mostrarFacturas());
-        guardarFacturasLocalStorage(ColFacturas);
-        borrarRegistrosFactura(tbodyDetalle,lbl_total);
-        div_nro_cliente_render.innerHTML = "";
-        div_nro_cliente_render.style.visibility = "hidden";
-        div_nro_cliente.style.visibility = "visible";
-        numeroCliente.value ="";
-        registrosFactura = new Array();        
-    }
-    else
-    {
-        alert("Factura sin detalle para facturar")
-    }
-       
-}
 
 
+
+    
+    
