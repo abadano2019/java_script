@@ -9,8 +9,13 @@ body {
 }
 h1 {
   text-align: center;
-  font-size: 3rem;
+  font-size: 1.5rem;
   color: black;
+}
+h3 {
+  text-align: center;
+  font-size: 1.5rem;
+  color: white;
 }
 .carrusel {
   width: 100%;
@@ -64,7 +69,9 @@ p.txt {
 }
 #formulario {
   width: 100%;
-  display: grid;
+  /*display: grid;*/
+  display:flex;
+  flex-direction: column;
   margin-left: auto;
   margin-right: auto;
   padding-top: 1em;
@@ -90,7 +97,8 @@ input {
 label {
   font-style: normal;
   font-weight: 700;
-  font-size: 25px;
+  font-size: 1rem;
+  font-weight: bold;
   line-height: 61px;
   color: #fff;
 }
@@ -148,6 +156,9 @@ input {
   padding-top: 1rem;
   padding-bottom: 1rem;
   color: white;
+  display: flex;
+  flex-direction: column;
+  margin-right: 30px;
 }
 
 .carrito{
@@ -188,4 +199,28 @@ a.referencia{
   font-size: 1.5rem;
   text-decoration-style: bold;
   text-align: center;
+}
+#usuario h3{
+  text-align: right;
+  font-size: 1rem;
+}
+div#div_nro_cliente_render{
+  display:flex;
+  flex-direction: row;
+  align-items: start;
+  text-align: left;
+  font-size: 4rem;
+  padding-left: 1rem;
+}
+div#div_nro_cliente_render label{
+ 
+  font-size: 1.5rem;
+  
+}
+
+.botones_config{
+  padding-top: 10rem;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
 }
