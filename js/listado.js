@@ -9,47 +9,42 @@ function guardarFacturasLocalStorage(colFacturas){
 // función para listar facturas, toma del local storage una colección de facturas y despliega 
 // por pantalla todas las facturas que tiene almacenadas
 function listarFacturas(){
-    let facturas = localStorage.getItem('facturas');
-    let colFacturas = JSON.parse(facturas);
-    if(colFacturas == null){
-        alert("No existe facturas cargadas !!!!");
-        return null;
+    let colFacturas = obtenerFacturas()
+    if(colFacturas == null)
+    {
+        alertaMensaje("No existen facturas cargadas !!!");
     }
-    
-    arrayDetalle = colFacturas.colFacturas;
-    
-    console.log("Ver ArrayDetalla: " + arrayDetalle)
-
-    let registros = "";
-    let content = "";
-    let total = 0;
-    arrayDetalle.forEach(item => {
-        let div = document.createElement("div");
-        content =
-         `  <h3>Tipo de Factura: ${item.tipo}</h3>
-            <h3>Numero Cliente: ${item.nroCliente} </h3>
-            <h3>Numero factura: ${item.nro}</h3>
-            <h3>Vto Factura: ${item.vto}</h3>
-         `  
-            detalle = item.registros;
-            //nroRenglon, codigo, cantidad, precioUnitario)
-            registros = "";
-            total = 0;
-            detalle.forEach((reg) => {
-                registros = registros + 
-                            ` <h3>Item Nro.: ${reg.nroRenglon}</h3>
-                              <h3>Codigo Producto: ${reg.codigo}</3>
-                              <h3>Cantidad: ${reg.cantidad}</3>
-                              <h3>Precio Unitario: ${reg.precioUnitario}</3>
-                            `
-                total = total + reg.cantidad*reg.precioUnitario;
+    else
+    {   
+        let registros = "";
+        let content = "";
+        let total = 0;
+        colFacturas.forEach(item => {
+            let div = document.createElement("div");
+            content =
+            `  <h3>Tipo de Factura: ${item.tipo}</h3>
+                <h3>Numero Cliente: ${item.nroCliente} </h3>
+                <h3>Numero factura: ${item.nro}</h3>
+                <h3>Vto Factura: ${item.vto}</h3>
+            `  
+                detalle = item.registros;
+                //nroRenglon, codigo, cantidad, precioUnitario)
+                registros = "";
+                total = 0;
+                detalle.forEach((reg) => {
+                    registros = registros + 
+                                ` <h3>Item Nro.: ${reg.nroRenglon}</h3>
+                                <h3>Codigo Producto: ${reg.codigo}</3>
+                                <h3>Cantidad: ${reg.cantidad}</3>
+                                <h3>Precio Unitario: ${reg.precioUnitario}</3>
+                                `
+                    total = total + reg.cantidad*reg.precioUnitario;
+                })
+            div.innerHTML = content + registros + "<h3>Total factura: "+ total+" </3>"+"<br></br><br></br>";
+            document.body.append(div);
             })
-        div.innerHTML = content + registros + "<h3>Total factura: "+ total+" </3>"+"<br></br><br></br>";
-        document.body.append(div);
-        })
-    
-    
     }
+}
 
 // función para listar facturas, toma del local storage una colección de facturas y despliega 
 // por pantalla todas las facturas que tiene almacenadas

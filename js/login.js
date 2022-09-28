@@ -19,11 +19,7 @@ frmLogin.addEventListener('submit',(e) =>{
     e.preventDefault();
     
     let codigo_salida = validar_usuario(usuarioLogin.value, passwordLogin.value);
-    console.log("codigoSalida",codigo_salida)
-
-    console.log("usuario",usuarioLogin.value)
-    console.log("password",passwordLogin.value)
-
+   
     if ((codigo_salida === 1) || (codigo_salida === 2)) {
         localStorage.setItem("usuario_activo",usuarioLogin.value)
         if(consulta_nivel_usuario(usuarioLogin.value) === 1){

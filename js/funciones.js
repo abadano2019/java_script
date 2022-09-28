@@ -16,6 +16,8 @@
 // function obtenerFacturas()
 // function validarStock(codigo)
 // function actualizarStock(colRegistrosFactura)
+// const getNroFactura()
+// const setNroFactura()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,15 +27,11 @@
 //
 // output: true en caso de que el valor sea null y false en caso contrario
 const es_NULL = (str) =>{
-    
-    resultado = false
-    
-    if (str == null){
-        resultado = true;
-    }
-    
+  
+    let resultado = (str == null) ? true : false;
     return resultado;
 }
+
 // Función para realizar redondeo de centesimos
 // input: num: numero con decimales a reondear
 //
@@ -100,12 +98,12 @@ function sumaDetalle(registros,suma){
 //        filaDetalle: corresponde a la fila de datos que se agregaran al detalle de la factura
 //
 // output: no tiene, agrega linea al body del detalle de factura
-function renderCarrito(tbodyDetalle, filaDetalle, suma){
+function renderDetalleFactura(tbodyDetalle, filaDetalle, suma){
     tbodyDetalle.innerHTML = "";
     if (!filaDetalle.length >= 1) {return null}
     filaDetalle.map((item) => {
         const tr = document.createElement('tr');
-        /*tr.classList.add('ItemCarrito')*/
+        tr.classList.add('detalleFactura')
         const Content =
          `  <th scope="row">${item.nroRenglon}</th>
             <td class="table__productos">
@@ -227,33 +225,25 @@ function guardarProductos(colProductos){
 //
 // output: array de productos en caso de no estar vacio de lo contrario devuelve null
 function obtenerProductos(){
-    let colProductosJSON = localStorage.getItem('stock');
-    let colProductos = JSON.parse(colProductosJSON);
-    if(colProductos == null){
-        alert("Sin Productos en Stock")
-        return null;
-    }
-    return colProductos.productos;
+    let colProductos = JSON.parse(localStorage.getItem('stock')) || [];
+    let resultado = (colProductos == null) ? colProductos : colProductos.productos
+    return resultado;
 }
 
-// función para obtener las facturas cargadas en el local storage
-// input: n/a
-//
-// output: array vacio en caso de no contener elementos o array de facturas en caso contrario
-function obtenerFacturas(){
-    let arrayFacturas = [];
-    let colFacturas = localStorage.getItem('facturas');
-    let facturas = JSON.parse(colFacturas);
-    
-    if (facturas == null){
-        return arrayFacturas;
-    }
-    else
+const obtenerFacturas = () =>{
+    let colFacturas = JSON.parse(localStorage.getItem('facturas'));
+    let resultado
+    if (colFacturas == null)
     {
-        return facturas.colFacturas
+        resultado = [];
     }
-}
+    else 
+    {
+        resultado = colFacturas.colFacturas;
+    }
+    return resultado;
 
+}
 // función que devuelve el stock cargado para un producto
 // input: codigo: codigo de producto
 //
@@ -261,12 +251,11 @@ function obtenerFacturas(){
 function validarStock(codigo){
     codigo = parseInt(codigo);
     let productos = obtenerProductos();
-   
-    for(let i = 0; i < productos.length; i++){
-        if (productos[i].codigo == codigo){
-            return productos[i].stock;
-        }
-    }    
+    (productos==null) && alertaMensaje("Sin productos en Stock")
+    if(productos){
+        const producto = productos.find((prod)=>prod.codigo === codigo)
+        return producto.stock
+    }   
 }
 
 // función utilizada para actualizar los stock de productos luego de emitir una factura
@@ -276,23 +265,40 @@ function validarStock(codigo){
 // output: n/a 
 function actualizarStock(colRegistrosFactura){
     let productos = obtenerProductos();
-    for(let i = 0; i<colRegistrosFactura.length; i++){
-        let stock = validarStock(colRegistrosFactura[i].codigo)
-        if (colRegistrosFactura[i].cantidad > stock){
-            alert("Codigo producto: " + colRegistrosFactura[i].codigo + " sin stock suficiente");
-        }
-        else
-        {
-            for(let s = 0; s < productos.length; s++){
-                if (productos[s].codigo == colRegistrosFactura[i].codigo ){
-                    productos[s].stock = productos[s].stock - colRegistrosFactura[i].cantidad;
-                }
+    if(colRegistrosFactura){
+        colRegistrosFactura.forEach((registro) =>{
+            let stock = registro.stock;
+            if(registro.cantidad > stock){
+                alert("Codigo producto: " + colRegistrosFactura[i].codigo + " sin stock suficiente");
             }
-            productosActualizado = new Productos(productos);
-            guardarProductos(productosActualizado);
-             
-        }    
-
-
+            else
+            {
+                const producto = productos.find((prod)=>prod.codigo === codigo)
+                producto.stock = producto.stock - registro.cantidad; 
+                productosActualizado = new Productos(productos);
+                guardarProductos(productosActualizado); 
+            }
+        })
     }
+}
+
+//funcion que devuelve nro de factura almacenado en el local storage, en caso de no existir numero cargado
+// se devuelve null y un mensaje informando.
+// input: n/a
+//
+// output: nroFactura guardado en el local storage
+const getNroFactura = () =>{
+    let nroFactura = localStorage.getItem('nroFactura');
+    (nroFactura === null) && alert("No hay numero de Factura, comuniquese con el administrador del sistema");
+    return nroFactura;
+}
+
+// funcion que setea un nuevo nro de factura y lo almacena en el local storage
+// input: n/a
+//
+// output: n/a
+const setNroFactura = () =>{
+    let nroFactura = localStorage.getItem('nroFactura');
+    let nextNroFactura = parseInt(nroFactura) + 1;
+    localStorage.setItem('nroFactura', nextNroFactura)
 }

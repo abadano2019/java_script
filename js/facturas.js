@@ -2,7 +2,7 @@ let registrosFactura = [];
 let colFacturas = [];
 let nroCliente = 0;
 let fechaVto = "";
-let numeroFactura = 100000;
+let numeroFactura = 0;
 
 // Variables de fecha y usuario que se muestran en el head de la pagina
 // El usuario corresponde al usuario que se logueo en la pagina login
@@ -46,7 +46,7 @@ frm.addEventListener('submit',(e) =>{
        (isNaN(parseInt(cantidadProducto.value))))
     {
         // en caso de no ser valores numericos, se emite mensaje y se borran todos los inputs
-        alert("ingrese un valor numerico !!!!");
+        alertaMensajeDelay("Debe ingresar valores numericos !!!", 2000,'center', 'error')
         if(registrosFactura.length === 0){
             numeroCliente.value = "";
         }
@@ -56,37 +56,37 @@ frm.addEventListener('submit',(e) =>{
     }
     else
     {   
-        // si los valores son numericos, se valida que el nro de producto y la cantidad no sean cero
-        if((parseInt(nroProducto.value) === 0) || (parseInt(cantidadProducto.value) === 0))
-        {
-            alert("Nro.de producto o cantidad no pueden ser 0 !!!!")
+        // en caso de que no sean 0, se busca en nombre de la empresa, en caso de no existir
+        // se borran todos los campos y se esperan nuevos valores
+        nroCliente = parseInt(numeroCliente.value)
+        codigo = parseInt(nroProducto.value);
+        precioUnitario = parseInt(precioUnitarioProd.value);
+        cantidad = parseInt(cantidadProducto.value);
+        const nombreEmpresa = buscarEmpresa(nroCliente);
+        const nombreProducto = buscarProducto(codigo); 
+        
+        if((nombreEmpresa === "") || (nombreProducto === "")){
+
+            if((nombreEmpresa === "") && (nombreProducto === "")){
+                alertaMensajeDelay("Empresa y Producto no registrados !!!",2000, 'center', 'error')
+                numeroCliente.value = "";
+                nroProducto.value = "";
+            }else if((nombreEmpresa === "") && (!(nombreProducto === ""))){
+                alertaMensajeDelay("Empresa no registrada !!!",2000, 'center', 'error')
+                numeroCliente.value = "";
+            }else{
+                alertaMensajeDelay("Producto no registradao!!!",2000, 'center', 'error')
+                nroProducto.value = "";
+            }
         }
         else
-        {   
-            // en caso de que no sean 0, se busca en nombre de la empresa, en caso de no existir
-            // se borran todos los campos y se esperan nuevos valores
-            nroCliente = parseInt(numeroCliente.value)
-            codigo = parseInt(nroProducto.value);
-            precioUnitario = parseInt(precioUnitarioProd.value);
-            cantidad = parseInt(cantidadProducto.value);
-            const nombreEmpresa = buscarEmpresa(nroCliente);
-            const nombreProducto = buscarProducto(codigo); 
-            
-            if(nombreEmpresa === ""){
-                alert("No existe empresa !!!!");
-                numeroCliente.value = "";
-                //nroProducto.value = "";
-                //precioUnitarioProd.value = "";
-                //cantidadProducto.value = "";
-            } 
-            if (nombreProducto === "") 
+        {
+            // si los valores son numericos, se valida que la cantidad no sean cero
+            if((parseInt(cantidadProducto.value) === 0))
             {
-                alert("No existe producto !!!!");
-                //numeroCliente.value = "";
-                nroProducto.value = "";
-                //precioUnitarioProd.value = "";
-                //cantidadProducto.value = "";
-            }
+                alertaMensajeDelay("Cantidad no puede ser 0 !!!",2000, 'center', 'error')
+                cantidadProducto.value = "";
+            }    
             else
             {   
                 // Si la empresa existe, se cambia el contenido del contenedor de nro de cliente por el nro y el nombre
@@ -100,17 +100,17 @@ frm.addEventListener('submit',(e) =>{
                 if (stock >= cantidad){
                     nuevoRegistro = new RegistroFactura(indice+1,codigo,cantidad,precioUnitario);
                     registrosFactura.push(nuevoRegistro);
-                    renderCarrito(tbodyDetalle, registrosFactura, lbl_total)
+                    renderDetalleFactura(tbodyDetalle, registrosFactura, lbl_total)
                     precioUnitarioProd.value = "";
                     cantidadProducto.value = "";
                     nroProducto.value = "";
                 }
                 else
                 {
-                    alert("No hay stock disponible");
+                    alertaMensajeDelay("No hay stock suficiente !!!", 2000, 'center','warning')
                 }
-                
-                
+                    
+                    
             }
         }
         
@@ -123,24 +123,27 @@ function facturar(){
     let factura;
     if (registrosFactura.length != 0){
         actualizarStock(registrosFactura);
-        factura = new Factura("CONTADO",numeroFactura,nroCliente,registrosFactura,now);
-        numeroFactura++;
-        let colFacturas = obtenerFacturas();
-        let NewColFacturas = new Facturas(colFacturas);
-        NewColFacturas.agregarFactura(factura);
-        guardarFacturasLocalStorage(NewColFacturas);
-        borrarRegistrosFactura(tbodyDetalle,lbl_total);
-        div_nro_cliente_render.innerHTML = "";
-        div_nro_cliente_render.style.visibility = "hidden";
-        div_nro_cliente.style.visibility = "visible";
-        numeroCliente.value ="";
-        registrosFactura = new Array();
-        alert("Factura emitida !!!");        
+        numeroFactura = getNroFactura();
+        if(!(numeroFactura === null)){
+            factura = new Factura("CONTADO",numeroFactura,nroCliente,registrosFactura,now);
+            setNroFactura();
+            //numeroFactura++;
+            let colFacturas = obtenerFacturas();
+            let NewColFacturas = new Facturas(colFacturas);
+            NewColFacturas.agregarFactura(factura);
+            guardarFacturasLocalStorage(NewColFacturas);
+            borrarRegistrosFactura(tbodyDetalle,lbl_total);
+            div_nro_cliente_render.innerHTML = "";
+            div_nro_cliente_render.style.visibility = "hidden";
+            div_nro_cliente.style.visibility = "visible";
+            numeroCliente.value ="";
+            registrosFactura = new Array();
+            alertaMensajeAnimado("Factura emitida",'info');        
+        }
     }
     else
     {
-        alert("Factura sin detalle para facturar")
+        alertaMensajeDelay("Factura sin detalle para facturar !!!",2000,'center','warning')
     }
-       
 }
 

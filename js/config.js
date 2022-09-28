@@ -2,7 +2,7 @@
 function stock(){
     let colProductos = cargarStockProductos();
     guardarProductos(colProductos);
-    alert("Stock de productos cargados")
+    alertaMensaje("Stock de productos cargados")
 }
 
 // función que despliega los productos con los stock en la consola
@@ -11,11 +11,7 @@ function stock(){
 // output: un array con los productos
 function verStock(){
     let colProductos = obtenerProductos();
-    if (colProductos == null){
-        console.log("No existen productos cargados")
-        return null
-    }
-    console.log(colProductos);
+    (colProductos) ? console.log(colProductos) : console.log("No existen productos cargados")
     return colProductos; 
 }
 
@@ -26,12 +22,13 @@ function VerLocalStorage(){
     console.log("CARRITO: " + localStorage.carrito);
     console.log("PEDIDOS: " + localStorage.pedidos);
     console.log("FACTURAS: " + localStorage.facturas);
+    console.log("FACTURAS: " + localStorage.nroFactura);
 }
 
 // función que borra el local storage
 function borrarLocalStorage(){
   localStorage.clear();
-  alert("Local Storage borrado !!!!")
+  alertaMensaje("Local Storage borrado !!!!")
 }
 
 // función para modificar el stock de un producto
@@ -42,7 +39,7 @@ function modificarStock(codProducto, cantidad){
 
     let colProductos = obtenerProductos()
     if(colProductos == null){
-        alert("No hay stock cargado !!!");
+        alertaMensaje("No hay stock cargado !!!");
         return null;
     }
     else
@@ -58,23 +55,23 @@ function modificarStock(codProducto, cantidad){
 
         if (producto == ""){
         
-            alert("producto no existe !!!");
+            alertaMensaje("producto no existe !!!");
             return null;
         }
         if (cantidad > 0){
             producto.stock = producto.stock + cantidad;
-            alert("Stock modificado");
+            alertaMensaje("Stock modificado");
         }
         else
         {
             if (producto.stock + cantidad < 0){
-                alert("cantidad ingresada es incorrecta !!! stock en negativo")
+                alertaMensaje("cantidad ingresada es incorrecta !!! stock en negativo")
                 return null;
             }
             else
             {   
                 producto.stock = producto.stock + cantidad;
-                alert("Stock modificado");
+                alertaMensaje("Stock modificado");
             }
     }
         let colProductosModificada = new Productos(colProductos);
@@ -89,4 +86,19 @@ function modificacionStockPorProducto(){
     let cantidad = parseInt(prompt("ingrese cantidad: "))
 
     modificarStock(codProducto,cantidad)
+}
+
+// función que solicita por pantalla un numero que será utilizado como numero de factura actual
+// se setea el primer numero de las facturas que luego se mantiene sumandole uno y se guarda en el localstorage
+const configurarNroFactura = () =>{
+    inicial = prompt("Ingrese nro de factura: ");
+    if (isNaN(inicial) || es_NULL(inicial))
+    {
+        alertaMensaje("Debe ingresar un valor numerico")
+    }
+    else
+    {
+        alertaMensaje("Numero de factua configurado");
+        localStorage.setItem('nroFactura', inicial);
+    }    
 }

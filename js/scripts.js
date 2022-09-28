@@ -38,11 +38,7 @@ function addToCarritoItem(e){
 function addItemCarrito(newItem){
 
     // Alerta para indicar que le producto fue agregado al carrito
-    const alert = document.querySelector('.alert');
-    setTimeout(function(){
-        alert.classList.add('hide')
-    }, 2000);
-    alert.classList.remove('hide')
+    alertaMensajeDelay("Producto agregado al carrito !!!!",2000);
     
     // Si le producto ya existe en el carrito se suma una unidad a la cantidad
     const InputElement = tbody.getElementsByClassName('input__elemento') 
@@ -121,24 +117,35 @@ function removeItemCarrito(e){
     const buttonDelete = e.target;
     const tr = buttonDelete.closest(".item_Carrito");
     const title = tr.querySelector('.title').textContent;
-    for(let i=0; i<carrito.length; i++){
-        if(carrito[i].title.trim()===title.trim()){
-            carrito.splice(i,1);
-        }
-    }
-
-    // alerta para informar la baja del producto
-    const alert = document.querySelector('.remove');
-    setTimeout(function(){
-        alert.classList.add('remove')
-    }, 2000);
-    alert.classList.remove('remove')
-
-    tr.remove();
-    actualizarNrosProductosCarrito();
-    renderCarrito()
-    CarritoTotal();
+    
+    Swal.fire({
+        title: "ATENCION",
+        text: "Confirma que desea borrar el producto del carrito?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                for(let i=0; i<carrito.length; i++){
+                    if(carrito[i].title.trim()===title.trim()){
+                        carrito.splice(i,1);
+                    }
+                }
+                tr.remove();
+                actualizarNrosProductosCarrito();
+                renderCarrito()
+                CarritoTotal();   
+                Swal.fire(
+                    'Operación ejecutada !!!!',
+                    "Producto eliminado !!!!",
+                    'success',
+                )
+            }
+        })
 }
+
 
 // función para cambiar la cantidad de cada producto desde el carrito
 function cambioCantidadElemento(e){
@@ -191,13 +198,14 @@ window.onload = function(){
 
 // función para borrar el carrito
 const borrarCarrito = () =>{
-    let carritoStorage = getCarrito_LocalStorage("carrito");
+    let user = localStorage.getItem("usuario_activo");
+    let carritoStorage = getCarrito_LocalStorageUsuario();
     carrito = carritoStorage;
     const tope = carrito.length
     for(let i = tope; i> 0; i--){
         carrito.pop(carrito[i]);
     }
-    window.localStorage.setItem("carrito", JSON.stringify(carrito))
+    window.localStorage.setItem("carrito"+user, JSON.stringify(carrito))
 }
 
 // función para generar pedido
@@ -211,7 +219,7 @@ const generarPedido = () =>{
     }
     
     const usuario = localStorage.getItem("usuario_activo");
-    const carrito = getCarrito_LocalStorage("carrito");
+    const carrito = getCarrito_LocalStorageUsuario();
     const today = new Date();
     const fecha = today.toLocaleDateString('es-UY');
     newPedido = new Pedido(usuario,carrito,fecha);
@@ -219,6 +227,7 @@ const generarPedido = () =>{
     localStorage.setItem("pedidos",JSON.stringify(pedidos));
     borrarCarrito();
     renderCarrito();
-    alert("Pedido Generado !!!!")
+    CarritoTotal();
+    alertaMensajeAnimado("Pedido generado !!!!")
 }
 

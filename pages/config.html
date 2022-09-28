@@ -15,6 +15,7 @@
     <main>
         <div class="botones_config">
             <button class = "btn btn-danger mb-5 mx-1" onclick="stock()">CARGAR PRODUCTOS A LOCAL STORAGE</button>
+            <button class = "btn btn-danger mb-5 mx-1" onclick="configurarNroFactura()">SETEAR NUMERO DE FACTURA INICIAL</button>
             <button class = "btn btn-danger mb-5 mx-1" onclick="verStock()">VER STOCK EN CONSOLE LOG</button>
             <button class = "btn btn-danger mb-5 mx-1" onclick="modificacionStockPorProducto()">MODIFICAR STOCK</button>
             <button class = "btn btn-danger mb-5 mx-1" onclick="VerLocalStorage()">VER LOCAL STORAGE EN CONSOLE LOG</button>
@@ -25,11 +26,13 @@
     <footer>
 
     </footer>
-<script src="../js/bd.js"></script>
-<script src="../js/seguridad.js"></script>
-<script src="../js/clases.js"></script>
-<script src="../js/funciones.js"></script>
-<script src="../js/config.js"></script> 
-<script src="../js/listado.js"></script>    
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="../js/bd.js"></script>
+        <script src="../js/seguridad.js"></script>
+        <script src="../js/clases.js"></script>
+        <script src="../js/funciones.js"></script>
+        <script src="../js/alertas.js"></script>
+        <script src="../js/config.js"></script> 
+        <script src="../js/listado.js"></script>    
 </body>
 </html>
