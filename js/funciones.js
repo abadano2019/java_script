@@ -16,6 +16,7 @@
 // function obtenerFacturas()
 // function validarStock(codigo)
 // function actualizarStock(colRegistrosFactura)
+// function actualizarStockNC(colRegistrosFactura)
 // const getNroFactura()
 // const setNroFactura()
 
@@ -79,6 +80,7 @@ function buscarProducto(nroProducto)
 //        suma: elemento html a modificar par mostrar resultado
 // output: n/a
 function sumaDetalle(registros,suma){
+
     let total = 0;
     let iva = 0;
     let totalIva = 0;
@@ -151,19 +153,8 @@ function guardarFacturasLocalStorage(colFacturas){
 //         codigo = 0: usuario y contraseña ingresados no son correctos
 const validar_usuario = (usuario, contrasena) => {
 
-    let usu_pass = ""; // concatenación de los contenidos de las variables para validar contra la base
-    usu_pass = usuario + contrasena;
+    let codigo = tabla_usuario(usuario, contrasena);
 
-    switch (usu_pass) {
-        case "ARIELH1234":
-            codigo = 1;
-            break;
-        case "JUANL1122":
-            codigo = 2;
-            break;
-        default:
-            codigo = 0;
-    }
     return codigo;
 }
 
@@ -195,23 +186,42 @@ const validarDato = (str) =>{
 // función auxiliar utilizada para cargar stock a los productos
 function cargarStockProductos(){
 
-    let A = new Producto(100,"A",100);
-    let B = new Producto(101,"B",100);
-    let C = new Producto(102,"C",100);
-    let D = new Producto(103,"D",100);
-    let E = new Producto(104,"E",100);
-    let F = new Producto(105,"F",100);
-    let G = new Producto(106,"G",100);
+    let JM = new Producto(1,"Juego Menage",100);
+    let VP = new Producto(2,"Vasos plásticos",100);
+    let FC = new Producto(3,"Fuente Cerámica",100);
+    let JC = new Producto(4,"Juego de cubiertos",100);
+    let SC = new Producto(5,"Set cubiertos",100);
+    let M = new Producto(6,"Menage",100);
+    let JA = new Producto(7,"Juego de asaderas",100);
+    let FV = new Producto(8,"Fuente de vidrio",100);
+    let AP = new Producto(9,"Asadera con parrilla",100);
+    let B = new Producto(10,"Budinera",100);
+    let E = new Producto(11,"Exprimidor",100);
+    let EP = new Producto(12,"Exprimidor de palanca",100);
+    let EJ = new Producto(13,"Exprimidor con jarra",100);
+    let J = new Producto(14,"Juguera",100);
+    let C = new Producto(15,"Cafetera",100);
+    let CDG = new Producto(16,"Cafetera Dolce Gusto",100);
+
     let coleccionProductos = [];
     let colProductos = new Productos(coleccionProductos)
 
-    colProductos.agregarProducto(A);
+    colProductos.agregarProducto(JM);
+    colProductos.agregarProducto(VP);
+    colProductos.agregarProducto(FC);
+    colProductos.agregarProducto(JC);
+    colProductos.agregarProducto(SC);
+    colProductos.agregarProducto(M);
+    colProductos.agregarProducto(JA);
+    colProductos.agregarProducto(FV);
+    colProductos.agregarProducto(AP);
     colProductos.agregarProducto(B);
-    colProductos.agregarProducto(C);
-    colProductos.agregarProducto(D);
     colProductos.agregarProducto(E);
-    colProductos.agregarProducto(F);
-    colProductos.agregarProducto(G);
+    colProductos.agregarProducto(EP);
+    colProductos.agregarProducto(EJ);
+    colProductos.agregarProducto(J);
+    colProductos.agregarProducto(C);
+    colProductos.agregarProducto(CDG);
     return colProductos;
 }
 
@@ -231,17 +241,8 @@ function obtenerProductos(){
 }
 
 const obtenerFacturas = () =>{
-    let colFacturas = JSON.parse(localStorage.getItem('facturas'));
-    let resultado
-    if (colFacturas == null)
-    {
-        resultado = [];
-    }
-    else 
-    {
-        resultado = colFacturas.colFacturas;
-    }
-    return resultado;
+   
+    return (JSON.parse(localStorage.getItem('facturas')))?.colFacturas;
 
 }
 // función que devuelve el stock cargado para un producto
@@ -260,7 +261,7 @@ function validarStock(codigo){
 
 // función utilizada para actualizar los stock de productos luego de emitir una factura
 // se recorre el detalle de la factura y se baja del stock la cantidad de productos facturados
-// input: n/a
+// input: colRegistosFactura que representa la colección de los detalles (registros) de la factura
 // 
 // output: n/a 
 function actualizarStock(colRegistrosFactura){
@@ -269,11 +270,11 @@ function actualizarStock(colRegistrosFactura){
         colRegistrosFactura.forEach((registro) =>{
             let stock = registro.stock;
             if(registro.cantidad > stock){
-                alert("Codigo producto: " + colRegistrosFactura[i].codigo + " sin stock suficiente");
+                alertaMensaje("Codigo producto: " + colRegistrosFactura[i].codigo + " sin stock suficiente");
             }
             else
             {
-                const producto = productos.find((prod)=>prod.codigo === codigo)
+                const producto = productos.find((prod)=>prod.codigo === registro.codigo)
                 producto.stock = producto.stock - registro.cantidad; 
                 productosActualizado = new Productos(productos);
                 guardarProductos(productosActualizado); 
@@ -282,14 +283,32 @@ function actualizarStock(colRegistrosFactura){
     }
 }
 
-//funcion que devuelve nro de factura almacenado en el local storage, en caso de no existir numero cargado
+// función utilizada para actualizar los stock de productos luego de emitir una factura
+// se recorre el detalle de la factura y se da de alta en el stock la cantidad de productos facturados
+// input: input: colRegistosFactura que representa la colección de los detalles (registros) de la factura
+// 
+// output: n/a 
+function actualizarStockNC(colRegistrosFactura){
+    let productos = obtenerProductos();
+    if(colRegistrosFactura){
+        colRegistrosFactura.forEach((registro) =>{
+            const producto = productos.find((prod)=>prod.codigo === registro.codigo)
+            producto.stock = producto.stock + registro.cantidad; 
+            productosActualizado = new Productos(productos);
+            guardarProductos(productosActualizado); 
+            
+        })
+    }
+}
+
+// funcion que devuelve nro de factura almacenado en storageel local storage, en caso de no existir numero cargado
 // se devuelve null y un mensaje informando.
 // input: n/a
 //
 // output: nroFactura guardado en el local storage
 const getNroFactura = () =>{
     let nroFactura = localStorage.getItem('nroFactura');
-    (nroFactura === null) && alert("No hay numero de Factura, comuniquese con el administrador del sistema");
+    (nroFactura === null) && alertaMensaje("No hay número de Factura asigando, comuniquese con el administrador del sistema");
     return nroFactura;
 }
 
@@ -302,3 +321,4 @@ const setNroFactura = () =>{
     let nextNroFactura = parseInt(nroFactura) + 1;
     localStorage.setItem('nroFactura', nextNroFactura)
 }
+

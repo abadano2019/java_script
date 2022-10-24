@@ -29,6 +29,10 @@ function VerLocalStorage(){
 function borrarLocalStorage(){
   localStorage.clear();
   alertaMensaje("Local Storage borrado !!!!")
+  setTimeout(function(){
+    window.location.href = "http://127.0.0.1:5501/pages/login.html"
+}, 2000);
+  
 }
 
 // función para modificar el stock de un producto

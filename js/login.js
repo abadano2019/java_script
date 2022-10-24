@@ -19,7 +19,7 @@ frmLogin.addEventListener('submit',(e) =>{
     e.preventDefault();
     
     let codigo_salida = validar_usuario(usuarioLogin.value, passwordLogin.value);
-   
+
     if ((codigo_salida === 1) || (codigo_salida === 2)) {
         localStorage.setItem("usuario_activo",usuarioLogin.value)
         if(consulta_nivel_usuario(usuarioLogin.value) === 1){
@@ -27,18 +27,37 @@ frmLogin.addEventListener('submit',(e) =>{
         }
         else
         {
-            window.location.href = "http://127.0.0.1:5501/pages/carrito.html"
+            window.location.href = "http://127.0.0.1:5501/pages/shop.html"
         }
     }
-    if (codigo_salida === 0){
-        alert("Usuario / Contraseña incorrectos");
-        intentos++
+    else
+    {
+        if ((codigo_salida === 0) && (intentos < 3))
+        {
+            alertaMensajeAnimado("Usuario / Contraseña incorrectos", "error");
+            intentos++
+        }
+        else
+        {
+            if (intentos == 3)
+            {   
+                Swal.fire({
+                    title: "Usuario / Contraseña incorrectos",
+                    text: "Cantidad de intentos superados, vuelva a ingresar",
+                    icon: 'error',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      Swal.fire(
+                        intentos=0,
+                        window.location.href = "http://127.0.0.1:5501/index.html"
+                      )
+                    }
+                  })
+            }
+        }
     }
-    
-    if (intentos === 3){
-        intentos = 0;
-        alert("Intentos excedidos, vuelva a intentar");
-        window.location.href = "http://127.0.0.1:5501/index.html"
-    }
-    
 })

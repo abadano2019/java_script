@@ -125,10 +125,11 @@ function facturar(){
         actualizarStock(registrosFactura);
         numeroFactura = getNroFactura();
         if(!(numeroFactura === null)){
-            factura = new Factura("CONTADO",numeroFactura,nroCliente,registrosFactura,now);
+            factura = new Factura("CONTADO",numeroFactura,nroCliente,registrosFactura,now,"");
             setNroFactura();
-            //numeroFactura++;
             let colFacturas = obtenerFacturas();
+            ((colFacturas === null) || (colFacturas === undefined)) ? colFacturas = [] : "";
+            console.log(colFacturas)
             let NewColFacturas = new Facturas(colFacturas);
             NewColFacturas.agregarFactura(factura);
             guardarFacturasLocalStorage(NewColFacturas);
@@ -138,7 +139,7 @@ function facturar(){
             div_nro_cliente.style.visibility = "visible";
             numeroCliente.value ="";
             registrosFactura = new Array();
-            alertaMensajeAnimado("Factura emitida",'info');        
+            alertaMensajeAnimado("Factura emitida",'success');        
         }
     }
     else

@@ -10,6 +10,7 @@ function guardarFacturasLocalStorage(colFacturas){
 // por pantalla todas las facturas que tiene almacenadas
 function listarFacturas(){
     let colFacturas = obtenerFacturas()
+    console.log("Facturas: " + colFacturas)
     if(colFacturas == null)
     {
         alertaMensaje("No existen facturas cargadas !!!");
@@ -26,6 +27,7 @@ function listarFacturas(){
                 <h3>Numero Cliente: ${item.nroCliente} </h3>
                 <h3>Numero factura: ${item.nro}</h3>
                 <h3>Vto Factura: ${item.vto}</h3>
+                <h3>Factura Anulación: ${item.nroAnulacion}</h3>
             `  
                 detalle = item.registros;
                 //nroRenglon, codigo, cantidad, precioUnitario)
@@ -50,7 +52,12 @@ function listarFacturas(){
 // por pantalla todas las facturas que tiene almacenadas
 function listarStock(){
     let stock = obtenerProductos();
-           
+    
+    if (!stock){
+        alertaMensaje("No hay stock ingresado");
+        stock = []
+    }
+    
     stock.forEach(item => {
         let div = document.createElement("div");
         content =
@@ -61,12 +68,14 @@ function listarStock(){
         `  
         div.innerHTML = content;
         document.body.append(div);
-        })
+    })
+    
 }
 
 // función que redirecciona a la pagina de facturas contado
-const btnFacturas_volver = () =>{
-    window.location.href = "http://127.0.0.1:5501/pages/contado.html"
+const btnFacturas_volver = (pag) =>{
+    window.history.back()
+    
 }
 
 // función que redirecciona a la pagina de menú central
@@ -82,6 +91,11 @@ function listarPedidos(){
     if (!(pedidosStorage === null)){
         let pedidosJSON = JSON.parse(pedidosStorage);
         pedidos = pedidosJSON;
+        
+    }
+    else
+    {
+        alertaMensaje("No hay pedidos ingresados");   
     }
                
     pedidos.forEach(item => {

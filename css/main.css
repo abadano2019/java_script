@@ -176,6 +176,7 @@ input {
 
 .table__productos{
   display: flex;
+  justify-content: center;
 }
 .table__productos > img{
   width: 9rem;
@@ -219,8 +220,35 @@ div#div_nro_cliente_render label{
 }
 
 .botones_config{
-  padding-top: 10rem;
+  padding-top: 5rem;
   display:flex;
   flex-direction: column;
   align-items: center;
+}
+
+#header-factura{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+p#cotizacion_dolar, p#cotizacion_euro, p#cotizacion_yen, p#cotizacion_libra{
+  margin: 0;
+  text-align: left;
+  padding: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#div_nro_factura_credito{
+  display:flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding-left: 1rem;
+}
+
+.titulo-formulario-contacto{
+  font-size: 3rem;
+  color: rgb(241, 146, 146);
+  padding-top: 10px;
 }

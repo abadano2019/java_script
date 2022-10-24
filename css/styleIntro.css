@@ -52,3 +52,26 @@ header, .alert{
 .text-right{
     text-align: right;
 }
+
+#valor_temp, #ubicacion, #desc_temp, #viento{
+    color: white;
+}
+
+#clima{
+    display: flex;
+    flex-direction: row;
+}
+
+.referencia{
+    text-justify: center;
+}
+
+p#valor_temp, p#ubicacion, p#desc_temp, p#viento{
+    margin: 0;
+}
+
+#header_intro{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

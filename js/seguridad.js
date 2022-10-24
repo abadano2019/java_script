@@ -16,8 +16,9 @@ function validar_nivel_pag(nivel, pag){
 function validarSeguridad(pag){
    
     let usuario = localStorage.getItem('usuario_activo');
+    console.log(usuario)
     let nivel = consulta_nivel_usuario(usuario);
-    
+   
     if (!validar_nivel_pag(nivel,pag)){
         
         window.location.href = "http://127.0.0.1:5501/pages/error.html";

@@ -3,7 +3,11 @@
 //            nro: numero de factura
 //            nroCliente: corresponde al nro de cliente registrado en el sistema
 //            registros: es el detalle de compra de la factura, es un array de varios registros
-//            vto: indica el vencimiento de la factura              
+//            vto: indica el vencimiento de la factura 
+//            nroAnulación: corresponde a el nro de factura contado o de credito en caso de se para un recibo
+//                          o nota de credito y a el nro de recibo o nota de crédito en caso de ser una 
+//                          factura contado o de crédito. De esta forma se identifica a que documento está
+//                          afectando.             
 //
 // metodos: getTipo(): devuele el tipo de factura
 //          getNro(): devuelve el numero de factura
@@ -15,12 +19,13 @@
 //          getRegistrosImprimir(): genera un string para poder visualizar el detalle de la factura
 //          totalMasIva(): devuelve el total iva incluido de la factura
 class Factura {
-    constructor(tipo, nro, nroCliente, registros, vto){
+    constructor(tipo, nro, nroCliente, registros, vto, nroAnulacion){
         this.tipo = tipo
         this.nro = nro;
         this.nroCliente = nroCliente;
         this.registros = registros;
         this.vto = vto;
+        this.nroAnulacion = nroAnulacion
     }
     getTipo(){
         return this.tipo;
@@ -36,6 +41,9 @@ class Factura {
     }
     getVto(){
         return this.vto;
+    }
+    getnroAnulacion(){
+        return this.nroAnulacion;
     }
     VerTotales(){
             let registros = this.getRegistros();
@@ -197,7 +205,7 @@ class RegistroFactura {
     }    
 }
 
-// Clase Producto, representa los productos 
+// Clase Producto, representa los productos
 // atributos: codigo: indica el codigo del producto vendido
 //            nombre: indica el nombre del producto
 //            stock: indica el stock del producto
@@ -227,6 +235,22 @@ class Producto {
     }
     aumentarStock(cantidad){
         this.stock = this.getStock() + cantidad;
+    }
+}
+
+// Clase Producto, representa los productos del carrito de compras
+// atributos: id: codigo id del producto
+//            titulo: nombre del producto
+//            img_src: url de la imagen del producto
+//            descripción: descripcion del producto
+//            precio: precio del producto
+class Producto_shop {
+    constructor(id, titulo, img_src, descripcion, precio){
+        this.id = id
+        this.titulo = titulo
+        this.img_src = img_src
+        this.descripcion = descripcion
+        this.precio = precio
     }
 }
 
